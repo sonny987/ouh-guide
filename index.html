@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#003f5c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="OUH Guide">
+<meta name="description" content="OUH Klinisk Guide – trin-for-trin retningslinjer for sygeplejersker, SSA og læger">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>OUH Klinisk Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f4f8;
+  --surface: #ffffff;
+  --surface2: #e8eef5;
+  --border: #c8d6e5;
+  --accent: #005a8e;
+  --accent2: #00a8a8;
+  --text: #0d1b2a;
+  --text2: #4a6274;
+  --text3: #8aa5bc;
+  --danger: #c0392b;
+  --warn: #e67e22;
+  --ok: #27ae60;
+  --nurse: #005a8e;
+  --doctor: #1a4a2a;
+  --ssa: #4a1a6e;
+  --radius: 10px;
+  --shadow: 0 2px 16px rgba(0,0,0,0.09);
+  --header-h: 56px;
+  --role-h: 50px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);}
+
+/* HEADER */
+header{background:var(--accent);color:white;padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:var(--header-h);position:fixed;top:0;left:0;right:0;z-index:200;box-shadow:0 2px 12px rgba(0,60,100,0.22)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.logo-icon{width:34px;height:34px;background:white;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700;font-size:13px;font-family:'IBM Plex Mono',monospace;letter-spacing:-0.5px}
+.header-right{display:flex;align-items:center;gap:8px}
+.live-badge{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 10px;font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.5px}
+.live-dot{width:7px;height:7px;background:#2ecc71;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
+.menu-btn{background:none;border:none;color:white;font-size:24px;cursor:pointer;padding:4px 6px;display:none;line-height:1}
+
+/* ROLE BAR */
+.role-bar{position:fixed;top:var(--header-h);left:0;right:0;z-index:190;background:var(--surface);border-bottom:2px solid var(--border);padding:8px 16px;display:flex;gap:8px;height:var(--role-h);align-items:center;overflow-x:auto;scrollbar-width:none}
+.role-bar::-webkit-scrollbar{display:none}
+.role-btn{padding:6px 16px;border-radius:20px;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:500;white-space:nowrap;transition:all .2s;color:var(--text2)}
+.role-btn.active[data-role="sygeplejerske"]{background:var(--nurse);color:white;border-color:var(--nurse)}
+.role-btn.active[data-role="ssa"]{background:var(--ssa);color:white;border-color:var(--ssa)}
+.role-btn.active[data-role="laege"]{background:var(--doctor);color:white;border-color:var(--doctor)}
+
+/* LEVEL BAR */
+.level-bar{position:fixed;top:calc(var(--header-h) + var(--role-h));left:0;right:0;z-index:180;background:var(--surface2);border-bottom:1px solid var(--border);padding:6px 16px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text2)}
+.level-label{font-weight:600;color:var(--text3);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.8px;text-transform:uppercase}
+.level-btns{display:flex;gap:4px}
+.lvl-btn{padding:4px 12px;border-radius:14px;border:1.5px solid var(--border);background:white;font-size:12px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;color:var(--text2);transition:all .2s}
+.lvl-btn.active{background:var(--accent2);color:white;border-color:var(--accent2)}
+.tts-btn{margin-left:auto;display:flex;align-items:center;gap:6px;padding:5px 14px;border-radius:16px;border:1.5px solid var(--border);background:white;font-size:12px;font-family:'IBM Plex Sans',sans-serif;cursor:pointer;color:var(--text2);transition:all .2s;font-weight:500}
+.tts-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tts-btn.speaking{background:var(--accent);color:white;border-color:var(--accent)}
+.tts-btn.speaking .tts-icon::after{content:'⏹'}
+.tts-btn:not(.speaking) .tts-icon::after{content:'🔊'}
+
+/* BODY BELOW BARS */
+.app-body{
+  display:flex;
+  position:fixed;
+  top:calc(var(--header-h) + var(--role-h) + 37px);
+  left:0;right:0;bottom:0;
+  overflow:hidden;
+}
+
+/* SIDEBAR */
+.sidebar{width:272px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100%;overflow:hidden;transition:transform .25s ease}
+.search-wrap{padding:12px;flex-shrink:0;}
+.search-box{width:100%;padding:9px 12px 9px 36px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'IBM Plex Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238aa5bc' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.867-3.834zm-5.242 1.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px center}
+.search-box:focus{border-color:var(--accent)}
+.cat-list{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:12px}
+.cat-group{margin-bottom:2px}
+.cat-heading{padding:8px 14px 4px;font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);font-family:'IBM Plex Mono',monospace}
+.cat-item{padding:9px 14px 9px 18px;cursor:pointer;display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text2);border-left:3px solid transparent;transition:all .15s;line-height:1.3}
+.cat-item:hover{background:var(--bg);color:var(--text)}
+.cat-item.active{background:#eef4fb;color:var(--accent);border-left-color:var(--accent);font-weight:500}
+.cat-icon{font-size:15px;flex-shrink:0}
+.no-results{padding:20px;text-align:center;color:var(--text3);font-size:13px}
+
+/* OVERLAY */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:150}
+.overlay.show{display:block}
+
+/* CONTENT AREA - THIS IS THE KEY SCROLL FIX */
+.content{
+  flex:1;
+  min-width:0;
+  height:100%;
+  overflow-y:auto !important;
+  overflow-x:hidden;
+  padding:20px;
+  display:block;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* WELCOME */
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:50px 20px;gap:14px;color:var(--text2);height:100%}
+.welcome-icon{font-size:52px}
+.welcome h2{font-size:22px;color:var(--text);font-weight:600}
+.welcome p{font-size:14px;max-width:380px;line-height:1.7}
+.quick-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px}
+.quick-btn{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);background:white;font-size:12.5px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;color:var(--text2);transition:all .2s}
+.quick-btn:hover{border-color:var(--accent);color:var(--accent);background:#eef4fb}
+
+/* GUIDE HEADER */
+.guide-hero{border-radius:var(--radius);padding:20px 22px;color:white;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.guide-hero-title{font-size:20px;font-weight:700;margin-bottom:6px}
+.guide-hero-meta{font-size:11px;opacity:.75;font-family:'IBM Plex Mono',monospace;display:flex;gap:14px;flex-wrap:wrap}
+.role-chip{padding:4px 12px;border-radius:12px;font-size:11px;font-weight:600;background:rgba(255,255,255,0.2);white-space:nowrap;align-self:flex-start}
+
+/* LOADING */
+.loading-card{background:white;border-radius:var(--radius);padding:40px;text-align:center;border:1px solid var(--border);margin-bottom:18px;}
+.spinner{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{color:var(--text2);font-size:14px}
+.loading-sub{color:var(--text3);font-size:12px;margin-top:5px;font-family:'IBM Plex Mono',monospace}
+
+/* INFO GRID */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:10px;margin-bottom:18px}
+.info-box{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.info-box-lbl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'IBM Plex Mono',monospace;margin-bottom:5px}
+.info-box-val{font-size:15px;font-weight:600;color:var(--text)}
+.info-box-sub{font-size:12px;color:var(--text2);margin-top:2px}
+
+/* STEPS */
+.steps-card{background:white;border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;margin-bottom:18px;}
+.steps-card-header{padding:12px 18px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-family:'IBM Plex Mono',monospace;display:flex;align-items:center;justify-content:space-between}
+
+.step{border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:0;animation:slideIn .3s ease forwards;opacity:0}
+.step:last-child{border-bottom:none}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.step-top{display:flex;gap:0;align-items:stretch}
+.step-num-col{width:52px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding:18px 0 14px;background:var(--bg);border-right:1px solid var(--border)}
+.step-circle{width:30px;height:30px;border-radius:50%;background:var(--accent);color:white;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace}
+.step-body-col{flex:1;min-width:0;padding:18px 18px 14px;overflow:hidden}
+.step-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:5px;word-wrap:break-word;overflow-wrap:break-word;}
+.step-desc{font-size:13.5px;color:var(--text2);line-height:1.65;word-wrap:break-word;overflow-wrap:break-word;white-space:normal;}
+
+/* STEP IMAGE */
+.step-img-wrap{margin:10px 18px 14px 52px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--bg);position:relative;min-height:140px}
+.step-img{width:100%;display:block;object-fit:cover;max-height:200px}
+.step-img-caption{padding:6px 10px;font-size:11px;color:var(--text3);background:var(--surface2);font-style:italic}
+.step-img-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;gap:8px;color:var(--text3)}
+.step-img-placeholder .big-icon{font-size:32px;opacity:.5}
+.step-img-placeholder .img-lbl{font-size:11px;font-family:'IBM Plex Mono',monospace}
+.img-loading{display:flex;align-items:center;justify-content:center;height:140px;gap:8px;color:var(--text3);font-size:13px}
+.mini-spin{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+
+/* WARNING */
+.step-warn{margin:0 18px 14px;padding:8px 12px;border-radius:6px;font-size:12.5px;line-height:1.55;display:flex;gap:8px}
+.step-warn.danger{background:#fdf0ee;color:var(--danger);border-left:3px solid var(--danger)}
+.step-warn.warn{background:#fdf6ed;color:var(--warn);border-left:3px solid var(--warn)}
+.step-warn.ok{background:#edfaf3;color:var(--ok);border-left:3px solid var(--ok)}
+
+/* SOURCE */
+.source-row{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:11px 16px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text3);flex-wrap:wrap}
+.source-row a{color:var(--accent);text-decoration:none}
+.source-row a:hover{text-decoration:underline}
+.source-ts{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:11px}
+
+/* ERROR */
+.err-card{background:#fdf0ee;border:1px solid #f5b7b1;border-radius:var(--radius);padding:20px;color:var(--danger);font-size:14px;line-height:1.6}
+
+/* MOBILE */
+@media(max-width:700px){
+  .menu-btn{display:block}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:160;transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .content{padding:14px}
+  .info-grid{grid-template-columns:1fr 1fr}
+  .tts-btn span{display:none}
+  .level-label{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">OUH</div>
+    <span>Klinisk Guide</span>
+  </div>
+  <div class="header-right">
+    <div class="live-badge"><div class="live-dot"></div>LIVE AI</div>
+    <button onclick="handleLogoClick()" title="" style="background:none;border:none;color:white;font-size:18px;cursor:pointer;padding:4px 8px;opacity:0.4" id="adminTrigger">⚙️</button>
+    <button class="menu-btn" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" style="display:none;position:fixed;inset:0;background:linear-gradient(135deg,#003f5c,#005a8e,#0077b6);z-index:999;align-items:center;justify-content:center;flex-direction:column;">
+  <div style="background:white;border-radius:16px;padding:36px 32px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="width:64px;height:64px;background:#005a8e;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-family:'IBM Plex Mono',monospace;color:white;font-weight:700;font-size:20px;">OUH</div>
+      <div style="font-size:20px;font-weight:700;color:#0d1b2a;margin-bottom:6px">Klinisk Guide</div>
+      <div style="font-size:13px;color:#8aa5bc">Kun for autoriseret personale</div>
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;font-weight:600;color:#4a6274;letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:6px">Adgangskode</label>
+      <input id="loginInput" type="password" placeholder="Indtast adgangskode..."
+        style="width:100%;padding:12px 14px;border:1.5px solid #c8d6e5;border-radius:8px;font-size:15px;font-family:'IBM Plex Sans',sans-serif;outline:none;letter-spacing:2px"
+        onkeydown="if(event.key==='Enter')doLogin()"
+        onfocus="this.style.borderColor='#005a8e'"
+        onblur="this.style.borderColor='#c8d6e5'"
+      />
+    </div>
+    <button onclick="doLogin()" style="width:100%;padding:13px;background:#005a8e;color:white;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;letter-spacing:0.3px;transition:background .2s"
+      onmouseover="this.style.background='#004a78'" onmouseout="this.style.background='#005a8e'">
+      Log ind →
+    </button>
+    <div id="loginError" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ee;color:#c0392b;border-radius:6px;font-size:13px;text-align:center">
+      ❌ Forkert adgangskode
+    </div>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #f0f4f8;text-align:center;font-size:11px;color:#b2bec3">
+      🔒 Kun OUH-personale · Kontakt admin for adgang
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL (skjult) -->
+<div id="adminPanel" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:998;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:14px;padding:28px;max-width:440px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.25);">
+    <div style="font-size:17px;font-weight:700;margin-bottom:4px">⚙️ Admin Panel</div>
+    <div style="font-size:12px;color:#8aa5bc;margin-bottom:20px;font-family:'IBM Plex Mono',monospace">Kun synlig for administratorer</div>
+    
+    <div style="margin-bottom:16px">
+      <label style="font-size:11px;font-weight:600;color:#4a6274;letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:6px">Anthropic API-nøgle</label>
+      <input id="adminApiInput" type="password" placeholder="sk-ant-..."
+        style="width:100%;padding:10px 12px;border:1.5px solid #c8d6e5;border-radius:7px;font-size:13px;font-family:'IBM Plex Mono',monospace;outline:none"/>
+      <div style="font-size:11px;color:#8aa5bc;margin-top:4px">Gemmes krypteret · kun admin kan ændre</div>
+    </div>
+
+    <div style="margin-bottom:20px">
+      <label style="font-size:11px;font-weight:600;color:#4a6274;letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:6px">Brugeradgangskode</label>
+      <input id="adminPwInput" type="text" placeholder="F.eks. OUH2024"
+        style="width:100%;padding:10px 12px;border:1.5px solid #c8d6e5;border-radius:7px;font-size:14px;font-family:'IBM Plex Mono',monospace;outline:none;letter-spacing:2px"/>
+      <div style="font-size:11px;color:#8aa5bc;margin-top:4px">Del denne kode med autoriseret personale</div>
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <button onclick="saveAdminSettings()" style="flex:1;padding:11px;background:#005a8e;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">💾 Gem indstillinger</button>
+      <button onclick="closeAdmin()" style="padding:11px 16px;background:#f0f4f8;color:#4a6274;border:none;border-radius:8px;font-size:14px;cursor:pointer">Luk</button>
+    </div>
+    <div style="margin-top:12px">
+      <button onclick="doLogout()" style="width:100%;padding:9px;background:#fdf0ee;color:#c0392b;border:1px solid #f5b7b1;border-radius:8px;font-size:13px;cursor:pointer">🚪 Log ud alle brugere (nulstil)</button>
+    </div>
+    <div id="adminMsg" style="display:none;margin-top:12px;padding:10px;border-radius:6px;font-size:13px;text-align:center"></div>
+  </div>
+</div>
+
+<div class="role-bar">
+  <button class="role-btn active" data-role="sygeplejerske" onclick="setRole('sygeplejerske',this)">🏥 Sygeplejerske</button>
+  <button class="role-btn" data-role="ssa" onclick="setRole('ssa',this)">💊 SSA</button>
+  <button class="role-btn" data-role="laege" onclick="setRole('laege',this)">🩺 Læge</button>
+</div>
+
+<div class="level-bar">
+  <span class="level-label">Niveau</span>
+  <div class="level-btns">
+    <button class="lvl-btn" data-lvl="simpel" onclick="setLevel('simpel',this)">📗 Let</button>
+    <button class="lvl-btn active" data-lvl="normal" onclick="setLevel('normal',this)">📘 Normal</button>
+    <button class="lvl-btn" data-lvl="avanceret" onclick="setLevel('avanceret',this)">📕 Avanceret</button>
+  </div>
+  <button class="tts-btn" id="ttsBtn" onclick="toggleTTS()">
+    <span class="tts-icon"></span>
+    <span>Læs op</span>
+  </button>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<div class="app-body">
+  <div class="sidebar" id="sidebar">
+    <div class="search-wrap">
+      <input class="search-box" id="searchBox" placeholder="Søg retningslinje..." oninput="filterCats(this.value)" autocomplete="off" />
+    </div>
+    <div class="cat-list" id="catList"></div>
+  </div>
+
+  <div class="content" id="content">
+    <div class="welcome" id="welcomeScreen">
+      <div class="welcome-icon">🏥</div>
+      <h2>OUH Klinisk Guide</h2>
+      <p>Vælg en retningslinje i menuen, eller start med en af de mest brugte herunder. AI'en henter og forenkler proceduren for din rolle med billeder til hvert trin.</p>
+      <div class="quick-btns">
+        <button class="quick-btn" onclick="quickSelect('blodtransfusion','Blodtransfusion')">🩸 Blodtransfusion</button>
+        <button class="quick-btn" onclick="quickSelect('hjerteStop','Hjertestop (HLR)')">🚨 HLR</button>
+        <button class="quick-btn" onclick="quickSelect('sepsis','Sepsisbehandling')">🔴 Sepsis</button>
+        <button class="quick-btn" onclick="quickSelect('haanddesinfektion','Håndhygiejne')">🧤 Håndhygiejne</button>
+        <button class="quick-btn" onclick="quickSelect('insulinbehandling','Insulinbehandling')">💉 Insulin</button>
+        <button class="quick-btn" onclick="quickSelect('kateterpleje','KAD-pleje')">🔵 KAD-pleje</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────
+const CATS = [
+  {group:'Blod & Kredsløb',icon:'🩸',items:[
+    {id:'blodtransfusion',label:'Blodtransfusion'},
+    {id:'blodpodning',label:'Blodpodning'},
+    {id:'cvk',label:'CVK-pleje'},
+    {id:'perifervenflon',label:'Perifert venekateter (PVK)'},
+    {id:'arteriekateter',label:'Arteriekateter – pleje'},
+    {id:'portakateter',label:'Portakateter – adgang og pleje'},
+    {id:'picc',label:'PICC-line – pleje'},
+  ]},
+
+  {group:'Prøvetagning',icon:'🧪',items:[
+    {id:'blodproeve',label:'Blodprøvetagning (venepunktur)'},
+    {id:'arteriepunktur',label:'Arteriepunktur (ABG)'},
+    {id:'urinproeve',label:'Urinprøve – midtstrålsprøve'},
+    {id:'urinkateterproeve',label:'Urinprøve fra KAD'},
+    {id:'dyrkning',label:'Dyrkning og resistens (D+R)'},
+    {id:'faecesprøve',label:'Fæcesprøve'},
+    {id:'podning',label:'Podning – næse, svælg, sår'},
+    {id:'lumbalpunktur',label:'Lumbalpunktur (LP)'},
+    {id:'pleuraproeve',label:'Pleurapunktur – assistans'},
+    {id:'ascitesproeve',label:'Ascitespunktur – assistans'},
+    {id:'biopsi',label:'Biopsi – assistans og efterpleje'},
+    {id:'halsvenebiopsi',label:'Knoglemarvsbiopsi – assistans'},
+    {id:'saarproeve',label:'Sårpodning'},
+    {id:'spytproeve',label:'Spytprøve / COVID-test'},
+  ]},
+
+  {group:'Medicin & Dosering',icon:'💊',items:[
+    {id:'medicindosering',label:'Medicingivning – oral'},
+    {id:'ivmedicin',label:'IV-medicin – opsætning'},
+    {id:'smertebehandling',label:'Smertebehandling'},
+    {id:'morfin',label:'Morfin og opioidbehandling'},
+    {id:'insulinbehandling',label:'Insulinbehandling'},
+    {id:'antibiotika',label:'Antibiotika'},
+    {id:'antikoagulation',label:'Antikoagulationsbehandling'},
+    {id:'kemoterapi',label:'Kemoterapi – opsætning og obs'},
+    {id:'tranexamsyre',label:'Tranexamsyre (TXA)'},
+    {id:'kortikosteroid',label:'Kortikosteroid – behandling'},
+    {id:'diuretika',label:'Diuretika – behandling og obs'},
+    {id:'vasoaktiv',label:'Vasoaktiv medicin (noradrenalin)'},
+    {id:'inhalation',label:'Inhalationsbehandling'},
+    {id:'epidural',label:'Epiduralkateter – pleje og obs'},
+    {id:'pca',label:'PCA-pumpe – smertebehandling'},
+    {id:'antipsykotika',label:'Antipsykotika – administration'},
+    {id:'tromboseprofylakse',label:'Tromboseprofylakse'},
+  ]},
+
+  {group:'Infektionshygiejne',icon:'🧤',items:[
+    {id:'haanddesinfektion',label:'Håndhygiejne'},
+    {id:'isolation',label:'Isolationsforholdsregler – generelt'},
+    {id:'kontaktIsolation',label:'Kontaktisolation'},
+    {id:'luftbaaren',label:'Luftbåren smitte'},
+    {id:'dropletIsolation',label:'Dråbeisolation'},
+    {id:'mrsa',label:'MRSA-håndtering'},
+    {id:'vre',label:'VRE-håndtering'},
+    {id:'esbl',label:'ESBL-håndtering'},
+    {id:'cdifficile',label:'C. difficile – isolering og pleje'},
+    {id:'covid',label:'COVID-19 – forholdsregler'},
+    {id:'sterilFelt',label:'Sterilt felt – oprettelse'},
+    {id:'operationshygiejne',label:'Operationshygiejne'},
+  ]},
+
+  {group:'Vitale parametre & Monitorering',icon:'📊',items:[
+    {id:'news2',label:'NEWS2-score'},
+    {id:'ekg',label:'EKG – optagelse og tolkning'},
+    {id:'iltbehandling',label:'Iltbehandling / saturation'},
+    {id:'blodtryk',label:'Blodtryksmåling'},
+    {id:'blodsukker',label:'Blodsukker – kapillær måling'},
+    {id:'vaegt',label:'Vægt og væskebalance'},
+    {id:'temperatur',label:'Temperaturmåling'},
+    {id:'telemetri',label:'Telemetri og hjerteovervågning'},
+    {id:'invasivbt',label:'Invasivt blodtryk – monitorering'},
+    {id:'cvp',label:'CVP-måling'},
+    {id:'spirometri',label:'Spirometri – udførelse'},
+    {id:'pef',label:'PEF-måling'},
+  ]},
+
+  {group:'Akut & Genoplivning',icon:'🚨',items:[
+    {id:'hjerteStop',label:'Hjertestop (HLR)'},
+    {id:'anafylaksi',label:'Anafylaksi'},
+    {id:'sepsis',label:'Sepsisbehandling'},
+    {id:'traumer',label:'Traumemodtagelse'},
+    {id:'kramper',label:'Kramper og epileptisk anfald'},
+    {id:'bevidstloshed',label:'Bevidstløs patient'},
+    {id:'akutopkald',label:'MET-kald – akutopkald'},
+    {id:'chok',label:'Chokbehandling'},
+    {id:'luftvej',label:'Luftvejshåndtering – akut'},
+    {id:'intubation',label:'Intubation – assistans'},
+    {id:'defibrillering',label:'Defibrillering (AED/manuel)'},
+    {id:'akutblodning',label:'Akut svær blødning'},
+    {id:'overdosis',label:'Forgiftning og overdosis'},
+    {id:'hyperglykæmi',label:'Hyperglykæmi / DKA'},
+    {id:'hypoglykæmi',label:'Hypoglykæmi – akut behandling'},
+    {id:'hypertensivkrise',label:'Hypertensiv krise'},
+  ]},
+
+  {group:'Neurologiske sygdomme',icon:'🧠',items:[
+    {id:'lumbalpunktur',label:'Lumbalpunktur (LP)'},
+    {id:'gcs',label:'Glasgow Coma Scale (GCS)'},
+    {id:'pupilreaktion',label:'Pupilreaktion og neurologisk obs'},
+    {id:'mmse',label:'MMSE – kognitiv vurdering'},
+    {id:'apopleksi',label:'Apopleksi – observation og pleje'},
+    {id:'trombolyse',label:'Trombolyse ved apopleksi'},
+    {id:'epilepsi',label:'Epilepsi – anfald og behandling'},
+    {id:'meningitis',label:'Meningitis – obs og behandling'},
+    {id:'parkinson',label:'Parkinson – medicinering og pleje'},
+    {id:'demens',label:'Demens – adfærd og pleje'},
+    {id:'delir',label:'Delir – vurdering og behandling'},
+    {id:'icp',label:'Forhøjet intrakranielt tryk – obs'},
+  ]},
+
+  {group:'Hjerte & Lunger',icon:'🫀',items:[
+    {id:'atrieflimmer',label:'Atrieflimren – behandling'},
+    {id:'hjertesvigt',label:'Hjertesvigt – behandling og obs'},
+    {id:'ami',label:'Akut myokardieinfarkt (AMI)'},
+    {id:'angina',label:'Angina pectoris'},
+    {id:'pacemaker',label:'Pacemaker – pleje og obs'},
+    {id:'pneumoni',label:'Pneumoni – behandling'},
+    {id:'kol',label:'KOL-exacerbation'},
+    {id:'astma',label:'Astmaanfald – akut behandling'},
+    {id:'lungeemboli',label:'Lungeemboli – obs og behandling'},
+    {id:'pneumothorax',label:'Pneumothorax – behandling'},
+    {id:'respirator',label:'Respiratorbehandling – obs'},
+    {id:'cpap',label:'CPAP/BiPAP – opsætning og obs'},
+    {id:'pleuradraan',label:'Pleuradræn – pleje og obs'},
+  ]},
+
+  {group:'Mave-tarm & Lever',icon:'🫃',items:[
+    {id:'gibleedning',label:'GI-blødning – obs og behandling'},
+    {id:'leversvigt',label:'Leversvigt – obs og pleje'},
+    {id:'pankreatitis',label:'Pankreatitis – behandling'},
+    {id:'ileus',label:'Ileus – obs og behandling'},
+    {id:'ascites',label:'Ascites – behandling og tømning'},
+    {id:'colostomi',label:'Kolostomi – pleje'},
+    {id:'ileostomi',label:'Ileostomi – pleje'},
+    {id:'ernæring',label:'Enteral ernæring – sondeernæring'},
+    {id:'parenteral',label:'Parenteral ernæring (TPN)'},
+    {id:'endoskopi',label:'Endoskopi – forberedelse og efterpleje'},
+    {id:'colonoskopi',label:'Koloskopi – forberedelse'},
+    {id:'appendicitis',label:'Appendicitis – obs og pleje'},
+  ]},
+
+  {group:'Nyre & Urologi',icon:'💧',items:[
+    {id:'kadanlaeg',label:'KAD-anlæggelse'},
+    {id:'kateterpleje',label:'KAD-pleje'},
+    {id:'urinproeve',label:'Urinprøve – midtstrålsprøve'},
+    {id:'nyresvigt',label:'Akut nyresvigt – obs og behandling'},
+    {id:'dialyse',label:'Dialyse – forberedelse og obs'},
+    {id:'urosepsis',label:'Urosepsis – behandling'},
+    {id:'urinvejsinfektion',label:'Urinvejsinfektion (UVI)'},
+    {id:'blæreskylning',label:'Blæreskylning'},
+    {id:'nefrostomi',label:'Nefrostomi – pleje'},
+  ]},
+
+  {group:'Endokrinologi',icon:'⚗️',items:[
+    {id:'insulinbehandling',label:'Insulinbehandling'},
+    {id:'diabetes',label:'Diabetes – daglig kontrol'},
+    {id:'hyperglykæmi',label:'Hyperglykæmi / DKA'},
+    {id:'hypoglykæmi',label:'Hypoglykæmi – behandling'},
+    {id:'thyreoidea',label:'Thyreoideasygdom – obs og medicinering'},
+    {id:'binyrebark',label:'Binyrebarksvigt – behandling'},
+    {id:'elektrolytter',label:'Elektrolytforstyrrelser'},
+  ]},
+
+  {group:'Onkologi & Hæmatologi',icon:'🔬',items:[
+    {id:'kemoterapi',label:'Kemoterapi – opsætning og obs'},
+    {id:'portakateter',label:'Portakateter – adgang og pleje'},
+    {id:'kemotoksisk',label:'Kemotoksisk spild – håndtering'},
+    {id:'neutropeni',label:'Febril neutropeni'},
+    {id:'transfusionreakt',label:'Transfusionsreaktion'},
+    {id:'stamcelletransplant',label:'Stamcelletransplantation – pleje'},
+    {id:'knoglemarv',label:'Knoglemarvsbiopsi – assistans'},
+    {id:'cytostatikaekstra',label:'Ekstravasation af cytostatika'},
+    {id:'palliativ',label:'Palliativ pleje og smertelindring'},
+  ]},
+
+  {group:'Ortopædi & Kirurgi',icon:'🦴',items:[
+    {id:'preopForberedelse',label:'Præoperativ forberedelse'},
+    {id:'postop',label:'Postoperativ observation'},
+    {id:'gipsforbinding',label:'Gips – anlæggelse og obs'},
+    {id:'fraktur',label:'Fraktur – obs og smertebehandling'},
+    {id:'hoftealloplastik',label:'Hoftealloplastik – pleje'},
+    {id:'knæalloplastik',label:'Knæalloplastik – pleje'},
+    {id:'amputation',label:'Amputation – postoperativ pleje'},
+    {id:'compartment',label:'Compartmentsyndrom – obs'},
+    {id:'tromboseprofylakse',label:'Tromboseprofylakse postop'},
+    {id:'mobilisering',label:'Tidlig mobilisering postoperativt'},
+  ]},
+
+  {group:'Gynækologi & Obstetrik',icon:'🤰',items:[
+    {id:'foedsel',label:'Normal fødsel – observation'},
+    {id:'kejsersnit',label:'Kejsersnit – forberedelse og pleje'},
+    {id:'abort',label:'Abort – pleje og støtte'},
+    {id:'ektopisk',label:'Ektopisk graviditet – obs'},
+    {id:'praeklampsi',label:'Præeklampsi – obs og behandling'},
+    {id:'barselspleje',label:'Barselspleje'},
+    {id:'amning',label:'Amning – vejledning og støtte'},
+    {id:'gynOp',label:'Gynækologisk operation – pleje'},
+  ]},
+
+  {group:'Pædiatri',icon:'👶',items:[
+    {id:'neonatal',label:'Neonatal pleje – nyfødt'},
+    {id:'boernHLR',label:'HLR – børn'},
+    {id:'feberbarn',label:'Febrilt barn – vurdering'},
+    {id:'bronkiolitis',label:'Bronkiolitis – behandling'},
+    {id:'croup',label:'Croup – behandling'},
+    {id:'boernMedicin',label:'Medicindosering – børn'},
+    {id:'incubator',label:'Inkubator – pleje og obs'},
+  ]},
+
+  {group:'Psykiatri',icon:'🧩',items:[
+    {id:'delir',label:'Delir – vurdering og behandling'},
+    {id:'agitation',label:'Agiteret patient – håndtering'},
+    {id:'selvskade',label:'Selvskade – akut håndtering'},
+    {id:'tvangsindlæggelse',label:'Tvangsindlæggelse – procedure'},
+    {id:'antipsykotika',label:'Antipsykotika – administration'},
+    {id:'abstinens',label:'Abstinensbehandling (alkohol/stoffer)'},
+    {id:'suicidal',label:'Suicidal patient – risikovurdering'},
+  ]},
+
+  {group:'Øjne, Øre, Næse & Hals',icon:'👁️',items:[
+    {id:'oejendraaber',label:'Øjendråber – administration'},
+    {id:'oejenskylning',label:'Øjenskylning – kemisk læsion'},
+    {id:'oerehygiejne',label:'Ørehygiejne – skylning'},
+    {id:'naesebloedning',label:'Næseblødning – behandling'},
+    {id:'trakeotomi',label:'Trakeotomi – pleje og sugning'},
+  ]},
+
+  {group:'Hud & Dermatologi',icon:'🩺',items:[
+    {id:'eksem',label:'Eksem – behandling og pleje'},
+    {id:'psoriasis',label:'Psoriasis – behandling'},
+    {id:'brandsaar',label:'Brandsår – vurdering og behandling'},
+    {id:'tryksaarBehandling',label:'Tryksår – behandling og klassifikation'},
+    {id:'fodsaar',label:'Diabetisk fodsår – pleje'},
+  ]},
+
+  {group:'Radiologi & Billeddiagnostik',icon:'🔭',items:[
+    {id:'ct',label:'CT-scanning – forberedelse'},
+    {id:'mri',label:'MR-scanning – forberedelse'},
+    {id:'roengen',label:'Røntgen – forberedelse'},
+    {id:'ultralyd',label:'Ultralyd – assistans'},
+    {id:'kontrast',label:'Kontrastmiddel – obs og reaktion'},
+    {id:'scintigrafi',label:'Scintigrafi – forberedelse'},
+    {id:'pet',label:'PET-scanning – forberedelse'},
+    {id:'angiografi',label:'Angiografi – forberedelse og efterpleje'},
+  ]},
+
+  {group:'Undersøgelser & Endoskopi',icon:'🔍',items:[
+    {id:'endoskopi',label:'Gastroskopi – forberedelse'},
+    {id:'colonoskopi',label:'Koloskopi – forberedelse'},
+    {id:'bronkoskopi',label:'Bronkoskopi – assistans'},
+    {id:'cystoskopi',label:'Cystoskopi – forberedelse'},
+    {id:'ekkokardiografi',label:'Ekkokardiografi – forberedelse'},
+    {id:'eeg',label:'EEG – forberedelse og udførelse'},
+    {id:'nerveledn',label:'Nerveledningsundersøgelse (EMG)'},
+    {id:'biopsi',label:'Biopsi – assistans og efterpleje'},
+    {id:'ercp',label:'ERCP – forberedelse og efterpleje'},
+  ]},
+
+  {group:'Sår & Kirurgisk pleje',icon:'🩹',items:[
+    {id:'saapleje',label:'Sårpleje – generel'},
+    {id:'tryksaar',label:'Tryksår – forebyggelse'},
+    {id:'forbinding',label:'Steril forbinding'},
+    {id:'suturer',label:'Suturer – pleje og fjernelse'},
+    {id:'draan',label:'Dræn – pleje og observation'},
+    {id:'vac',label:'VAC-pumpe – sårbehandling'},
+    {id:'brandsaarPleje',label:'Brandsår – forbinding'},
+  ]},
+
+  {group:'Katetre & Sonder',icon:'🔵',items:[
+    {id:'kadanlaeg',label:'KAD-anlæggelse'},
+    {id:'kateterpleje',label:'KAD-pleje'},
+    {id:'nasogastrisk',label:'Nasogastrisk sonde (NGS)'},
+    {id:'peg',label:'PEG-sonde – pleje'},
+    {id:'stomipleje',label:'Stomipleje'},
+    {id:'rectalsonde',label:'Rektal sonde – anlæggelse'},
+    {id:'thoraxdraan',label:'Thoraxdræn – pleje og obs'},
+  ]},
+
+  {group:'Ernæring & Væske',icon:'🥗',items:[
+    {id:'ernæring',label:'Enteral ernæring – sondeernæring'},
+    {id:'parenteral',label:'Parenteral ernæring (TPN)'},
+    {id:'vaeskebehandling',label:'Væskebehandling IV'},
+    {id:'kostscreening',label:'Kostscreening (NRS-2002)'},
+    {id:'dysfagi',label:'Dysfagi – vurdering og kost'},
+    {id:'fasteRegler',label:'Faste – regler præoperativt'},
+  ]},
+
+  {group:'Rehabilitering & Mobilisering',icon:'🏃',items:[
+    {id:'mobilisering',label:'Tidlig mobilisering'},
+    {id:'forflytning',label:'Forflytning og lejring'},
+    {id:'tryksaarForebyg',label:'Tryksårsforebyggelse – lejring'},
+    {id:'fysioterapi',label:'Fysioterapi – samarbejde'},
+    {id:'ergoterapi',label:'Ergoterapi – hjælpemidler'},
+    {id:'respirationsøvelser',label:'Respirationsøvelser postop'},
+  ]},
+
+  {group:'Palliativ & Terminal pleje',icon:'🕊️',items:[
+    {id:'palliativ',label:'Palliativ pleje og smertelindring'},
+    {id:'terminalpleje',label:'Terminal pleje – de sidste dage'},
+    {id:'dodsattest',label:'Dødsattest og ligsyn'},
+    {id:'sorgstøtte',label:'Sorgstøtte til pårørende'},
+    {id:'eticketik',label:'Etik og fravalg af behandling'},
+    {id:'pladsoensket',label:'Pladsønsket og livstestamente'},
+  ]},
+
+  {group:'Dokumentation & Lovgivning',icon:'📋',items:[
+    {id:'epj',label:'EPJ-dokumentation (Cosmic)'},
+    {id:'medicinkort',label:'Medicinkort'},
+    {id:'overflytning',label:'Overflytningsnotat'},
+    {id:'informeret',label:'Informeret samtykke'},
+    {id:'magtanvendelse',label:'Magtanvendelse – regler'},
+    {id:'utilsigtedHaendelse',label:'Utilsigtet hændelse (UTH)'},
+    {id:'tavshedspligt',label:'Tavshedspligt og GDPR'},
+    {id:'journalakt',label:'Aktindsigt i journal'},
+  ]},
+];
+
+// ─── STATE ──────────────────────────────────────────────────────
+let role = 'sygeplejerske';
+let level = 'normal';
+let activeId = null;
+let activeLabel = '';
+let ttsActive = false;
+let ttsUtterance = null;
+
+// ─── INIT ───────────────────────────────────────────────────────
+buildCats('');
+
+function buildCats(q) {
+  const fl = q.toLowerCase();
+  const el = document.getElementById('catList');
+  el.innerHTML = '';
+  let any = false;
+  CATS.forEach(cat => {
+    const items = cat.items.filter(i =>
+      !fl || i.label.toLowerCase().includes(fl) || cat.group.toLowerCase().includes(fl)
+    );
+    if (!items.length) return;
+    any = true;
+    const g = document.createElement('div');
+    g.className = 'cat-group';
+    g.innerHTML = `<div class="cat-heading">${cat.icon} ${cat.group}</div>`;
+    items.forEach(item => {
+      const d = document.createElement('div');
+      d.className = 'cat-item' + (activeId === item.id ? ' active' : '');
+      d.innerHTML = `<span class="cat-icon">${cat.icon}</span>${item.label}`;
+      d.onclick = () => { selectItem(item.id, item.label); };
+      g.appendChild(d);
+    });
+    el.appendChild(g);
+  });
+  if (!any) {
+    el.innerHTML = `<div class="no-results">Ingen resultater for "<strong>${q}</strong>"</div>`;
+  }
+}
+
+function filterCats(v) { buildCats(v); }
+
+function setRole(r, btn) {
+  role = r;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (activeId) fetchGuide(activeId, activeLabel);
+}
+
+function setLevel(l, btn) {
+  level = l;
+  document.querySelectorAll('.lvl-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (activeId) fetchGuide(activeId, activeLabel);
+}
+
+function selectItem(id, label) {
+  activeId = id; activeLabel = label;
+  buildCats(document.getElementById('searchBox').value);
+  closeSidebar();
+  stopTTS();
+  fetchGuide(id, label);
+}
+
+function quickSelect(id, label) {
+  activeId = id; activeLabel = label;
+  buildCats('');
+  fetchGuide(id, label);
+}
+
+// ─── COLORS ─────────────────────────────────────────────────────
+const roleColors = {sygeplejerske:'#005a8e', ssa:'#4a1a6e', laege:'#1a4a2a'};
+const roleLabels = {sygeplejerske:'Sygeplejerske', ssa:'SSA', laege:'Læge'};
+
+// ─── FETCH GUIDE ─────────────────────────────────────────────────
+async function fetchGuide(id, label) {
+  const content = document.getElementById('content');
+  const rc = roleColors[role];
+  const rl = roleLabels[role];
+
+  const levelDesc = {
+    simpel: 'Meget simpelt sprog. Ingen fagtermer. Forklar som til ny medarbejder.',
+    normal: 'Klinisk fagsprog til uddannet sundhedspersonale.',
+    avanceret: 'Avanceret terminologi med patofysiologi og evidensniveau.'
+  }[level];
+
+  const roleCtx = {
+    sygeplejerske: 'SYGEPLEJERSKE: fokus paa udforelse, sikkerhedstjek, observationer og hvornaar laege tilkaldes.',
+    ssa: 'SOSU-ASSISTENT: fokus paa SSAs konkrete opgaver, kompetencegraenser og hvornaar sygeplejerske tilkaldes.',
+    laege: 'LAEGE: fokus paa klinisk beslutning, indikationer, kontraindikationer og dosering.'
+  }[role];
+
+  content.innerHTML = `
+    <div class="guide-hero" style="background:${rc}">
+      <div>
+        <div class="guide-hero-title">${label}</div>
+        <div class="guide-hero-meta">
+          <span>OUH Klinisk Guide</span>
+          <span>Niveau: ${level}</span>
+          <span id="heroTime">Henter...</span>
+        </div>
+      </div>
+      <div class="role-chip">${rl}</div>
+    </div>
+    <div class="loading-card">
+      <div class="spinner"></div>
+      <div class="loading-txt">AI henter aktuel retningslinje...</div>
+      <div class="loading-sub">🔍 Tilpasser til din rolle...</div>
+    </div>
+  `;
+
+  const apiKey = getApiKey();
+  if (!apiKey) { showLogin(); return; }
+
+  // Use a simple line-based format instead of JSON to avoid parse errors
+  const prompt = `Du er klinisk ekspert i danske hospitalsprocedurer paa OUH.
+Rolle: ${roleCtx}
+Sprogkrav: ${levelDesc}
+Emne: ${label}
+
+Svar med PRÆCIS dette format - ingen andre linjer, ingen forklaringer:
+
+INDIKATION: [en kort saetning]
+VARIGHED: [tidsangivelse]
+UDSTYR: [kommasepareret liste]
+LAEGE: [hvornaar tilkaldes laege]
+
+TRIN1: [titel]
+BESKRIVELSE1: [hvad skal goeres konkret]
+BILLEDE1: [engelsk Unsplash soegord fx: nurse hospital procedure]
+ADVARSEL1: [ingen / warn: tekst / danger: tekst / ok: tekst]
+
+TRIN2: [titel]
+BESKRIVELSE2: [hvad skal goeres]
+BILLEDE2: [engelsk soegord]
+ADVARSEL2: [ingen / warn: tekst / danger: tekst]
+
+TRIN3: [titel]
+BESKRIVELSE3: [hvad skal goeres]
+BILLEDE3: [engelsk soegord]
+ADVARSEL3: [ingen]
+
+TRIN4: [titel]
+BESKRIVELSE4: [hvad skal goeres]
+BILLEDE4: [engelsk soegord]
+ADVARSEL4: [ingen / ok: tekst]
+
+TRIN5: [titel]
+BESKRIVELSE5: [hvad skal goeres]
+BILLEDE5: [engelsk soegord]
+ADVARSEL5: [ingen]
+
+TRIN6: [titel]
+BESKRIVELSE6: [hvad skal goeres]
+BILLEDE6: [engelsk soegord]
+ADVARSEL6: [ingen]
+
+KILDE: OUH Sundhedsstyrelsen 2024`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1200,
+        messages: [{role:'user', content: prompt}]
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error('API fejl: ' + data.error.message);
+    const raw = (data.content || []).filter(b => b.type==='text').map(b => b.text).join('');
+    if (!raw) throw new Error('Tomt svar fra API');
+    const guide = parseLineFormat(raw, label);
+    document.getElementById('heroTime').textContent = 'Opdateret: ' + new Date().toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'});
+    renderGuide(guide, label, rl, rc);
+  } catch(e) {
+    content.innerHTML = `
+      <div class="guide-hero" style="background:${rc}">
+        <div><div class="guide-hero-title">${label}</div></div>
+        <div class="role-chip">${rl}</div>
+      </div>
+      <div class="err-card">⚠️ <strong>Kunne ikke hente retningslinje</strong><br>${e.message}<br><br>
+      <button onclick="fetchGuide(activeId,activeLabel)" style="margin-top:8px;padding:8px 16px;background:var(--accent);color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px">🔄 Prøv igen</button>
+      <button onclick="showApiSetup()" style="margin-top:8px;margin-left:8px;padding:8px 16px;background:#f0f4f8;color:#4a6274;border:1px solid #c8d6e5;border-radius:6px;cursor:pointer;font-size:13px">🔑 Skift nøgle</button></div>
+    `;
+  }
+}
+
+// ─── PARSE LINE FORMAT ────────────────────────────────────────────
+function parseLineFormat(raw, label) {
+  const get = (key) => {
+    const re = new RegExp(`^${key}:\\s*(.+)`, 'm');
+    const m = raw.match(re);
+    return m ? m[1].trim() : '';
+  };
+
+  const kasser = [
+    {label:'INDIKATION', vaerdi: get('INDIKATION'), sub:''},
+    {label:'VARIGHED',   vaerdi: get('VARIGHED'),   sub:''},
+    {label:'UDSTYR',     vaerdi: get('UDSTYR'),      sub:''},
+    {label:'KONTAKT LÆGE', vaerdi: get('LAEGE'),     sub:''},
+  ].filter(k => k.vaerdi);
+
+  const trin = [];
+  for (let i = 1; i <= 8; i++) {
+    const titel = get(`TRIN${i}`);
+    if (!titel || titel.startsWith('[')) break;
+    const beskrivelse = get(`BESKRIVELSE${i}`) || '';
+    const billede = get(`BILLEDE${i}`) || 'hospital clinical procedure';
+    const advRaw = get(`ADVARSEL${i}`) || 'ingen';
+    let advarsel = null;
+    if (advRaw && advRaw.toLowerCase() !== 'ingen') {
+      const parts = advRaw.match(/^(warn|danger|ok):\s*(.+)/i);
+      if (parts) advarsel = {type: parts[1].toLowerCase(), tekst: parts[2]};
+    }
+    trin.push({titel, beskrivelse, billedsoegning: billede, advarsel});
+  }
+
+  return {
+    titel: label,
+    kasser,
+    trin,
+    kilder: get('KILDE') || 'OUH / Sundhedsstyrelsen 2024'
+  };
+}
+
+// ─── RENDER GUIDE ────────────────────────────────────────────────
+function renderGuide(guide, label, rl, rc) {
+  const content = document.getElementById('content');
+
+  const kassHTML = (guide.kasser||[]).map(k=>`
+    <div class="info-box">
+      <div class="info-box-lbl">${k.label}</div>
+      <div class="info-box-val">${k.vaerdi}</div>
+      ${k.sub?`<div class="info-box-sub">${k.sub}</div>`:''}
+    </div>`).join('');
+
+  const stepsHTML = (guide.trin||[]).map((t,i)=>{
+    const warnIco = {danger:'🚨',warn:'⚠️',ok:'✅'};
+    const warnHTML = t.advarsel
+      ? `<div class="step-warn ${t.advarsel.type}">${warnIco[t.advarsel.type]||'⚠️'} ${t.advarsel.tekst}</div>`
+      : '';
+    const imgId = `img-${i}`;
+    return `
+      <div class="step" style="animation-delay:${i*0.08}s">
+        <div class="step-top">
+          <div class="step-num-col"><div class="step-circle">${i+1}</div></div>
+          <div class="step-body-col">
+            <div class="step-title">${t.titel}</div>
+            <div class="step-desc">${t.beskrivelse}</div>
+          </div>
+        </div>
+        <div class="step-img-wrap" id="${imgId}">
+          <div class="img-loading"><div class="mini-spin"></div> Henter billede...</div>
+        </div>
+        ${warnHTML}
+      </div>`;
+  }).join('');
+
+  // Rebuild content preserving hero
+  const hero = content.querySelector('.guide-hero')?.outerHTML || `
+    <div class="guide-hero" style="background:${rc}">
+      <div><div class="guide-hero-title">${label}</div></div>
+      <div class="role-chip">${rl}</div>
+    </div>`;
+
+  content.innerHTML = `
+    ${hero}
+    ${kassHTML ? `<div class="info-grid">${kassHTML}</div>` : ''}
+    <div class="steps-card">
+      <div class="steps-card-header">
+        📋 TRIN-FOR-TRIN PROCEDURE
+        <span style="font-weight:400;letter-spacing:0">${(guide.trin||[]).length} trin</span>
+      </div>
+      ${stepsHTML}
+    </div>
+    <div class="source-row">
+      🔗 Kilde: ${guide.kilder||'OUH / Sundhedsstyrelsen'} —
+      <a href="https://ouh.dk" target="_blank" rel="noopener">ouh.dk</a>
+      <a href="https://www.sst.dk" target="_blank" rel="noopener">sst.dk</a>
+      <span class="source-ts">AI ${new Date().toLocaleDateString('da-DK')}</span>
+    </div>
+  `;
+
+  // Fetch images async for each step
+  (guide.trin||[]).forEach((t,i) => {
+    const isDanger = t.advarsel && t.advarsel.type === 'danger';
+    loadStepImage(t.billedsoegning||label, i, isDanger);
+  });
+
+  // Build TTS text
+  buildTTSText(guide);
+}
+
+// ─── IMAGE SYSTEM ────────────────────────────────────────────────
+// Logic: danger steps → real Wikimedia photo
+//        normal steps → animated SVG illustration
+
+// ── Wikimedia photo map ───────────────────────────────────────────
+const WIKIMEDIA_MAP = {
+  'blood transfusion': 'Blood_transfusion', 'blood bag': 'Blood_bag',
+  'transfusion': 'Blood_transfusion', 'blodtransfusion': 'Blood_transfusion',
+  'iv drip': 'Intravenous_therapy', 'intravenous': 'Intravenous_therapy',
+  'cpr': 'Cardiopulmonary_resuscitation', 'hlr': 'Cardiopulmonary_resuscitation',
+  'defibrillator': 'Defibrillation', 'defibrillation': 'Defibrillation',
+  'lumbar puncture': 'Lumbar_puncture', 'lumbalpunktur': 'Lumbar_puncture',
+  'anaphylaxis': 'Anaphylaxis', 'anafylaksi': 'Anaphylaxis',
+  'sepsis': 'Sepsis', 'mrsa': 'Methicillin-resistant_Staphylococcus_aureus',
+  'wound': 'Wound', 'burn': 'Burn', 'fracture': 'Bone_fracture',
+  'oxygen mask': 'Oxygen_mask', 'intubation': 'Tracheal_intubation',
+  'catheter': 'Urinary_catheterization', 'pvk': 'Peripheral_venous_catheter',
+  'cvk': 'Central_venous_catheter', 'ecg': 'Electrocardiogram',
+  'ekg': 'Electrocardiogram', 'xray': 'X-ray', 'mri': 'Magnetic_resonance_imaging',
+  'insulin': 'Insulin_injection', 'syringe': 'Syringe',
+  'nasogastric': 'Nasogastric_intubation', 'surgery': 'Surgery',
+};
+
+async function fetchWikimediaPhoto(query) {
+  const q = query.toLowerCase();
+  let article = null;
+  for (const [key, art] of Object.entries(WIKIMEDIA_MAP)) {
+    if (q.includes(key)) { article = art; break; }
+  }
+  // Also try direct search
+  if (!article) {
+    const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query + ' medical')}&format=json&origin=*&srlimit=1`;
+    const sr = await fetch(searchUrl);
+    const sd = await sr.json();
+    const title = sd?.query?.search?.[0]?.title;
+    if (title) article = title.replace(/ /g,'_');
+  }
+  if (!article) return null;
+  const url = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(article)}&prop=pageimages&format=json&pithumbsize=500&origin=*`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const pages = data?.query?.pages;
+  if (!pages) return null;
+  return Object.values(pages)[0]?.thumbnail?.source || null;
+}
+
+// ── Animated SVG illustrations library ───────────────────────────
+function getAnimatedSVG(query) {
+  const q = (query||'').toLowerCase();
+
+  // Hand washing / hygiene
+  if (q.match(/hand|wash|hygiene|handsker|glove|desinfek/)) return `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="160" fill="#eef7ff" rx="10"/>
+  <text x="160" y="20" text-anchor="middle" font-size="11" fill="#005a8e" font-family="sans-serif" font-weight="600">HÅNDHYGIEJNE</text>
+  <!-- Hands -->
+  <g id="hh">
+    <ellipse cx="130" cy="95" rx="28" ry="40" fill="#f5cba7" stroke="#e59866" stroke-width="1.5"/>
+    <ellipse cx="190" cy="95" rx="28" ry="40" fill="#f5cba7" stroke="#e59866" stroke-width="1.5"/>
+    <!-- Fingers left -->
+    <rect x="108" y="58" width="9" height="22" rx="4" fill="#f5cba7" stroke="#e59866" stroke-width="1"/>
+    <rect x="119" y="52" width="9" height="26" rx="4" fill="#f5cba7" stroke="#e59866" stroke-width="1"/>
+    <rect x="130" y="50" width="9" height="28" rx="4" fill="#f5cba7" stroke="#e59866" stroke-width="1"/>
+    <rect x="141" y="54" width="9" height="24" rx="4" fill="#f5cba7" stroke="#e59866" stroke-width="1"/>
+    <!-- Fingers right -->
+    <rect x="163" y="58" width="9" height="22" rx="4" fill="#f5cba7" stroke="#e59866" stroke-width="1"/>
+    <rect x="174" y="52" width="9" height="26" rx="4" fill="#f5cba7" stroke="#e59866" stroke-width="1"/>
+    <rect x="185" y="50" width="9" height="28" rx="4" fill="#f5cba7" stroke="#e59866" stroke-width="1"/>
+    <rect x="196" y="54" width="9" height="24" rx="4" fill="#f5cba7" stroke="#e59866" stroke-width="1"/>
+    <!-- Soap bubbles -->
+    <circle cx="160" cy="75" r="5" fill="none" stroke="#74b9ff" stroke-width="1.5" opacity="0.8">
+      <animate attributeName="cy" values="75;50;75" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.8;0;0.8" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="148" cy="80" r="3" fill="none" stroke="#74b9ff" stroke-width="1.5" opacity="0.6">
+      <animate attributeName="cy" values="80;55;80" dur="1.7s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0;0.6" dur="1.7s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="172" cy="78" r="4" fill="none" stroke="#a29bfe" stroke-width="1.5" opacity="0.7">
+      <animate attributeName="cy" values="78;48;78" dur="2.3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;0;0.7" dur="2.3s" repeatCount="indefinite"/>
+    </circle>
+    <animateTransform attributeName="transform" type="rotate" values="0 160 95;5 160 95;-5 160 95;0 160 95" dur="1.2s" repeatCount="indefinite"/>
+  </g>
+  <text x="160" y="148" text-anchor="middle" font-size="10" fill="#636e72" font-family="sans-serif">Gnid hænderne i mindst 30 sekunder</text>
+</svg>`;
+
+  // Blood / transfusion
+  if (q.match(/blood|blod|transfu|bag|pose/)) return `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="160" fill="#fff5f5" rx="10"/>
+  <text x="160" y="20" text-anchor="middle" font-size="11" fill="#c0392b" font-family="sans-serif" font-weight="600">BLODKOMPONENT</text>
+  <!-- IV Stand -->
+  <line x1="200" y1="25" x2="200" y2="145" stroke="#636e72" stroke-width="3"/>
+  <line x1="180" y1="25" x2="220" y2="25" stroke="#636e72" stroke-width="3"/>
+  <!-- Blood bag -->
+  <rect x="170" y="28" width="40" height="55" rx="6" fill="#e74c3c" opacity="0.85"/>
+  <rect x="183" y="22" width="14" height="10" rx="3" fill="#95a5a6"/>
+  <!-- Blood drip -->
+  <line x1="190" y1="83" x2="190" y2="120" stroke="#e74c3c" stroke-width="2"/>
+  <ellipse cx="190" cy="122" rx="4" ry="5" fill="#e74c3c">
+    <animate attributeName="ry" values="2;6;2" dur="1.5s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="118;125;118" dur="1.5s" repeatCount="indefinite"/>
+  </ellipse>
+  <!-- Label on bag -->
+  <text x="190" y="52" text-anchor="middle" font-size="8" fill="white" font-family="sans-serif">BLOD</text>
+  <text x="190" y="63" text-anchor="middle" font-size="7" fill="white" font-family="sans-serif">0 Rh+</text>
+  <!-- Patient arm -->
+  <rect x="80" y="110" width="80" height="25" rx="12" fill="#f5cba7" stroke="#e59866" stroke-width="1.5"/>
+  <line x1="190" y1="130" x2="158" y2="122" stroke="#e74c3c" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="160" y="152" text-anchor="middle" font-size="10" fill="#636e72" font-family="sans-serif">Kontrollér flow og patientreaktion</text>
+</svg>`;
+
+  // CPR / HLR
+  if (q.match(/cpr|hlr|hjerte|cardiac|chest|compression|genopliv/)) return `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="160" fill="#fff0f0" rx="10"/>
+  <text x="160" y="18" text-anchor="middle" font-size="11" fill="#c0392b" font-family="sans-serif" font-weight="600">HLR – HJERTEMASSAGE</text>
+  <!-- Person lying -->
+  <ellipse cx="160" cy="105" rx="55" ry="18" fill="#f5cba7" stroke="#e59866" stroke-width="1.5"/>
+  <ellipse cx="160" cy="88" rx="18" ry="16" fill="#f5cba7" stroke="#e59866" stroke-width="1.5"/>
+  <!-- Rescuer hands -->
+  <g id="hands">
+    <rect x="140" y="88" width="40" height="16" rx="6" fill="#fadbd8" stroke="#e74c3c" stroke-width="2"/>
+    <rect x="144" y="80" width="32" height="14" rx="5" fill="#fadbd8" stroke="#e74c3c" stroke-width="2"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;0,6;0,0" dur="0.8s" repeatCount="indefinite"/>
+  </g>
+  <!-- Pulse line -->
+  <polyline points="60,135 80,135 90,120 100,148 110,120 120,135 200,135 210,120 220,148 230,120 240,135 260,135" fill="none" stroke="#27ae60" stroke-width="2">
+    <animate attributeName="stroke-dashoffset" values="200;0" dur="1.6s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-dasharray" values="0,200;200,0" dur="1.6s" repeatCount="indefinite"/>
+  </polyline>
+  <text x="160" y="152" text-anchor="middle" font-size="10" fill="#636e72" font-family="sans-serif">30 kompressioner : 2 indblæsninger</text>
+</svg>`;
+
+  // Medication / pills
+  if (q.match(/medic|pill|tablet|drug|dose|medicin|antibio|insulin|morfin/)) return `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="160" fill="#f0fff4" rx="10"/>
+  <text x="160" y="20" text-anchor="middle" font-size="11" fill="#27ae60" font-family="sans-serif" font-weight="600">MEDICINGIVNING</text>
+  <!-- Medicine cup -->
+  <path d="M130 80 L135 130 L185 130 L190 80 Z" fill="white" stroke="#27ae60" stroke-width="2"/>
+  <path d="M130 80 L135 100 L185 100 L190 80 Z" fill="#d5f5e3"/>
+  <!-- Pills falling -->
+  <ellipse cx="155" cy="55" rx="8" ry="5" fill="#e74c3c">
+    <animate attributeName="cy" values="45;125;45" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;1;0;1" dur="2s" repeatCount="indefinite"/>
+  </ellipse>
+  <ellipse cx="165" cy="50" rx="8" ry="5" fill="#3498db">
+    <animate attributeName="cy" values="40;125;40" dur="2.3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;1;0;1" dur="2.3s" repeatCount="indefinite"/>
+  </ellipse>
+  <ellipse cx="175" cy="60" rx="8" ry="5" fill="#f39c12">
+    <animate attributeName="cy" values="50;125;50" dur="1.8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;1;0;1" dur="1.8s" repeatCount="indefinite"/>
+  </ellipse>
+  <!-- Checkmark -->
+  <circle cx="240" cy="90" r="18" fill="#27ae60" opacity="0.15"/>
+  <polyline points="230,90 238,100 252,78" fill="none" stroke="#27ae60" stroke-width="3" stroke-linecap="round">
+    <animate attributeName="stroke-dasharray" values="0,50;50,0" dur="1s" repeatCount="indefinite"/>
+  </polyline>
+  <text x="160" y="150" text-anchor="middle" font-size="10" fill="#636e72" font-family="sans-serif">Dobbelttjek patient, medicin og dosis</text>
+</svg>`;
+
+  // Vital signs / monitoring
+  if (q.match(/vital|pressure|pulse|blodtryk|puls|satur|ekg|ecg|news|temper|monitor/)) return `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="160" fill="#f0f4ff" rx="10"/>
+  <text x="160" y="18" text-anchor="middle" font-size="11" fill="#005a8e" font-family="sans-serif" font-weight="600">VITALE PARAMETRE</text>
+  <!-- Monitor screen -->
+  <rect x="60" y="25" width="200" height="100" rx="8" fill="#0d1b2a"/>
+  <rect x="68" y="33" width="184" height="84" rx="4" fill="#001f3d"/>
+  <!-- ECG line -->
+  <polyline points="72,75 90,75 98,55 106,92 114,58 122,75 180,75 188,55 196,92 204,58 212,75 244,75" 
+    fill="none" stroke="#2ecc71" stroke-width="2">
+    <animateTransform attributeName="transform" type="translate" values="0,0;-72,0" dur="2s" repeatCount="indefinite"/>
+  </polyline>
+  <polyline points="144,75 152,55 160,92 168,58 176,75 244,75 252,55 260,92 268,58 276,75 316,75" 
+    fill="none" stroke="#2ecc71" stroke-width="2">
+    <animateTransform attributeName="transform" type="translate" values="0,0;-72,0" dur="2s" repeatCount="indefinite"/>
+  </polyline>
+  <!-- Stats -->
+  <text x="80" y="50" font-size="9" fill="#e74c3c" font-family="monospace">HR: 72</text>
+  <text x="130" y="50" font-size="9" fill="#3498db" font-family="monospace">SpO2: 98%</text>
+  <text x="195" y="50" font-size="9" fill="#f39c12" font-family="monospace">BT: 125/80</text>
+  <text x="160" y="148" text-anchor="middle" font-size="10" fill="#636e72" font-family="sans-serif">Mål og dokumentér alle værdier</text>
+</svg>`;
+
+  // Patient identification / check
+  if (q.match(/patient|identif|wristband|armbånd|check|verify|tjek|kontrol|id/)) return `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="160" fill="#f8f0ff" rx="10"/>
+  <text x="160" y="20" text-anchor="middle" font-size="11" fill="#4a1a6e" font-family="sans-serif" font-weight="600">PATIENTIDENTIFIKATION</text>
+  <!-- Wristband -->
+  <rect x="95" y="65" width="130" height="40" rx="20" fill="white" stroke="#4a1a6e" stroke-width="2"/>
+  <text x="160" y="82" text-anchor="middle" font-size="9" fill="#2d3436" font-family="sans-serif" font-weight="600">CPR: 010101-0101</text>
+  <text x="160" y="95" text-anchor="middle" font-size="8" fill="#636e72" font-family="sans-serif">Anders Jensen</text>
+  <!-- Scan beam -->
+  <line x1="100" y1="85" x2="220" y2="85" stroke="#00b894" stroke-width="2" stroke-dasharray="4,3" opacity="0.8">
+    <animate attributeName="y1" values="70;105;70" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="y2" values="70;105;70" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
+  </line>
+  <!-- Checkmark -->
+  <circle cx="255" cy="85" r="16" fill="#00b894" opacity="0.2"/>
+  <polyline points="246,85 253,93 265,74" fill="none" stroke="#00b894" stroke-width="3" stroke-linecap="round">
+    <animate attributeName="stroke-dasharray" values="0,40;40,0;40,0;0,40" dur="2.5s" repeatCount="indefinite"/>
+  </polyline>
+  <text x="160" y="148" text-anchor="middle" font-size="10" fill="#636e72" font-family="sans-serif">Verificér CPR-nummer og navn</text>
+</svg>`;
+
+  // Isolation / PPE
+  if (q.match(/isolat|ppe|gown|mask|apron|forklæde|isolation|smitte/)) return `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="160" fill="#fff9e6" rx="10"/>
+  <text x="160" y="20" text-anchor="middle" font-size="11" fill="#e67e22" font-family="sans-serif" font-weight="600">ISOLATIONSUDSTYR</text>
+  <!-- Person in PPE -->
+  <ellipse cx="160" cy="50" rx="18" ry="18" fill="#f5cba7" stroke="#e59866" stroke-width="1.5"/>
+  <!-- Mask -->
+  <path d="M145 52 Q160 68 175 52" fill="#3498db" opacity="0.7"/>
+  <!-- Gown -->
+  <path d="M130 68 L100 145 L220 145 L190 68 Q160 75 130 68Z" fill="#3498db" opacity="0.5" stroke="#2980b9" stroke-width="1"/>
+  <!-- Gloves -->
+  <ellipse cx="98" cy="105" rx="14" ry="20" fill="#2ecc71" opacity="0.8" stroke="#27ae60" stroke-width="1"/>
+  <ellipse cx="222" cy="105" rx="14" ry="20" fill="#2ecc71" opacity="0.8" stroke="#27ae60" stroke-width="1"/>
+  <!-- PPE icons -->
+  <circle cx="75" cy="40" r="12" fill="#e74c3c" opacity="0.15"/>
+  <text x="75" y="44" text-anchor="middle" font-size="14">🧤</text>
+  <circle cx="245" cy="40" r="12" fill="#3498db" opacity="0.15"/>
+  <text x="245" y="44" text-anchor="middle" font-size="14">😷</text>
+  <text x="160" y="152" text-anchor="middle" font-size="10" fill="#636e72" font-family="sans-serif">Ifør korrekt beskyttelsesudstyr</text>
+</svg>`;
+
+  // Documentation / EPJ
+  if (q.match(/doc|journal|record|epj|cosmic|note|dokumenter|sign|skriv/)) return `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="160" fill="#f0f8ff" rx="10"/>
+  <text x="160" y="20" text-anchor="middle" font-size="11" fill="#005a8e" font-family="sans-serif" font-weight="600">DOKUMENTATION</text>
+  <!-- Clipboard -->
+  <rect x="100" y="30" width="120" height="110" rx="6" fill="white" stroke="#b2bec3" stroke-width="2"/>
+  <rect x="130" y="24" width="60" height="16" rx="8" fill="#dfe6e9" stroke="#b2bec3" stroke-width="1.5"/>
+  <!-- Lines of text with writing animation -->
+  <line x1="115" y1="60" x2="205" y2="60" stroke="#dfe6e9" stroke-width="8" stroke-linecap="round"/>
+  <line x1="115" y1="60" x2="115" y2="60" stroke="#2d3436" stroke-width="8" stroke-linecap="round">
+    <animate attributeName="x2" values="115;205;205" dur="2s" fill="freeze" repeatCount="indefinite"/>
+  </line>
+  <line x1="115" y1="78" x2="205" y2="78" stroke="#dfe6e9" stroke-width="8" stroke-linecap="round"/>
+  <line x1="115" y1="78" x2="115" y2="78" stroke="#2d3436" stroke-width="8" stroke-linecap="round">
+    <animate attributeName="x2" values="115;205;205" dur="2s" begin="0.5s" fill="freeze" repeatCount="indefinite"/>
+  </line>
+  <line x1="115" y1="96" x2="175" y2="96" stroke="#dfe6e9" stroke-width="8" stroke-linecap="round"/>
+  <line x1="115" y1="96" x2="115" y2="96" stroke="#2d3436" stroke-width="8" stroke-linecap="round">
+    <animate attributeName="x2" values="115;175;175" dur="2s" begin="1s" fill="freeze" repeatCount="indefinite"/>
+  </line>
+  <!-- Pen -->
+  <g>
+    <rect x="195" y="88" width="6" height="22" rx="2" fill="#f39c12" transform="rotate(-30 198 99)"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;0,-18;0,-36" dur="2s" repeatCount="indefinite" additive="sum"/>
+  </g>
+  <text x="160" y="152" text-anchor="middle" font-size="10" fill="#636e72" font-family="sans-serif">Dokumentér straks i Cosmic EPJ</text>
+</svg>`;
+
+  // Prepare / setup / equipment
+  if (q.match(/prepar|setup|equip|klargør|udstyr|sterile|forbered/)) return `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="160" fill="#f0fff4" rx="10"/>
+  <text x="160" y="20" text-anchor="middle" font-size="11" fill="#27ae60" font-family="sans-serif" font-weight="600">KLARGØRING AF UDSTYR</text>
+  <!-- Tray -->
+  <ellipse cx="160" cy="115" rx="100" ry="20" fill="#dfe6e9" stroke="#b2bec3" stroke-width="1.5"/>
+  <rect x="60" y="95" width="200" height="20" rx="4" fill="#ecf0f1" stroke="#b2bec3" stroke-width="1.5"/>
+  <!-- Items on tray appearing -->
+  <rect x="80" y="75" width="20" height="22" rx="3" fill="#74b9ff" opacity="0">
+    <animate attributeName="opacity" values="0;1;1" dur="2s" begin="0s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="60;75;75" dur="2s" begin="0s" repeatCount="indefinite"/>
+  </rect>
+  <ellipse cx="130" cy="85" rx="12" ry="16" fill="#a29bfe" opacity="0">
+    <animate attributeName="opacity" values="0;1;1" dur="2s" begin="0.4s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="70;85;85" dur="2s" begin="0.4s" repeatCount="indefinite"/>
+  </ellipse>
+  <rect x="150" y="72" width="30" height="24" rx="4" fill="#55efc4" opacity="0">
+    <animate attributeName="opacity" values="0;1;1" dur="2s" begin="0.8s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="57;72;72" dur="2s" begin="0.8s" repeatCount="indefinite"/>
+  </rect>
+  <ellipse cx="210" cy="85" rx="16" ry="12" fill="#fd79a8" opacity="0">
+    <animate attributeName="opacity" values="0;1;1" dur="2s" begin="1.2s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="70;85;85" dur="2s" begin="1.2s" repeatCount="indefinite"/>
+  </ellipse>
+  <text x="160" y="150" text-anchor="middle" font-size="10" fill="#636e72" font-family="sans-serif">Saml alt nødvendigt udstyr på bakke</text>
+</svg>`;
+
+  // Needle / injection / syringe
+  if (q.match(/inject|needle|syringe|sprøjte|kanyle|punkt|stik|venepunkt/)) return `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="160" fill="#fff5fb" rx="10"/>
+  <text x="160" y="20" text-anchor="middle" font-size="11" fill="#a855f7" font-family="sans-serif" font-weight="600">VENEPUNKTUR</text>
+  <!-- Arm -->
+  <rect x="60" y="90" width="200" height="40" rx="20" fill="#f5cba7" stroke="#e59866" stroke-width="2"/>
+  <!-- Vein -->
+  <path d="M80 110 Q160 105 240 110" fill="none" stroke="#74b9ff" stroke-width="4" opacity="0.6"/>
+  <!-- Syringe -->
+  <g>
+    <rect x="185" y="55" width="60" height="14" rx="3" fill="#ecf0f1" stroke="#b2bec3" stroke-width="1.5"/>
+    <rect x="193" y="57" width="20" height="10" rx="1" fill="#74b9ff" opacity="0.5"/>
+    <line x1="185" y1="62" x2="175" y2="62" stroke="#636e72" stroke-width="3" stroke-linecap="round"/>
+    <line x1="175" y1="62" x2="168" y2="68" stroke="#b2bec3" stroke-width="2"/>
+    <rect x="241" y="57" width="10" height="10" rx="1" fill="#dfe6e9" stroke="#b2bec3" stroke-width="1"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;-20,20;0,0" dur="3s" repeatCount="indefinite"/>
+  </g>
+  <text x="160" y="150" text-anchor="middle" font-size="10" fill="#636e72" font-family="sans-serif">Indsæt kanyle i 15-30° vinkel</text>
+</svg>`;
+
+  // Observe / watch / monitor patient
+  if (q.match(/observ|watch|monitor|overvåg|reaktion|tilsyn|kontrollér/)) return `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="160" fill="#f0f8ff" rx="10"/>
+  <text x="160" y="20" text-anchor="middle" font-size="11" fill="#005a8e" font-family="sans-serif" font-weight="600">OBSERVATION</text>
+  <!-- Eye -->
+  <ellipse cx="160" cy="80" rx="55" ry="30" fill="white" stroke="#005a8e" stroke-width="2"/>
+  <circle cx="160" cy="80" r="18" fill="#74b9ff"/>
+  <circle cx="160" cy="80" r="12" fill="#005a8e"/>
+  <circle cx="160" cy="80" r="6" fill="#0d1b2a"/>
+  <circle cx="165" cy="75" r="3" fill="white"/>
+  <!-- Scan lines -->
+  <line x1="105" y1="80" x2="155" y2="80" stroke="#00cec9" stroke-width="1.5" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0;0.6" dur="1.5s" repeatCount="indefinite"/>
+  </line>
+  <line x1="165" y1="80" x2="215" y2="80" stroke="#00cec9" stroke-width="1.5" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0;0.6" dur="1.5s" repeatCount="indefinite"/>
+  </line>
+  <!-- Pulse indicators -->
+  <circle cx="90" cy="80" r="8" fill="#e74c3c" opacity="0.2">
+    <animate attributeName="r" values="8;14;8" dur="1s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.2;0.05;0.2" dur="1s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="90" cy="80" r="4" fill="#e74c3c"/>
+  <text x="160" y="148" text-anchor="middle" font-size="10" fill="#636e72" font-family="sans-serif">Hold patienten under løbende observation</text>
+</svg>`;
+
+  // Default clinical illustration
+  return `
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="160" fill="#eef4fb" rx="10"/>
+  <text x="160" y="20" text-anchor="middle" font-size="11" fill="#005a8e" font-family="sans-serif" font-weight="600">KLINISK PROCEDURE</text>
+  <!-- Hospital cross animation -->
+  <g>
+    <rect x="140" y="55" width="40" height="60" rx="4" fill="#e74c3c" opacity="0.8"/>
+    <rect x="120" y="75" width="80" height="20" rx="4" fill="#e74c3c" opacity="0.8"/>
+    <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+  </g>
+  <!-- Orbiting dot -->
+  <circle cx="160" cy="85" r="45" fill="none" stroke="#005a8e" stroke-width="1" stroke-dasharray="4,4" opacity="0.3"/>
+  <circle cx="205" cy="85" r="6" fill="#005a8e" opacity="0.7">
+    <animateTransform attributeName="transform" type="rotate" values="0 160 85;360 160 85" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <text x="160" y="148" text-anchor="middle" font-size="10" fill="#636e72" font-family="sans-serif">Følg klinisk retningslinje nøje</text>
+</svg>`;
+}
+
+// ── Main image loader ─────────────────────────────────────────────
+async function loadStepImage(query, idx, isDanger) {
+  const wrap = document.getElementById(`img-${idx}`);
+  if (!wrap) return;
+  wrap.innerHTML = `<div class="img-loading"><div class="mini-spin"></div> Henter billede...</div>`;
+
+  if (isDanger) {
+    // Danger steps → try real Wikimedia photo first
+    try {
+      const photoUrl = await fetchWikimediaPhoto(query);
+      if (photoUrl) {
+        wrap.innerHTML = `
+          <img class="step-img" src="${photoUrl}" alt="${query}" loading="lazy"
+            onerror="this.parentElement.innerHTML=getAnimatedSVGWrap('${query.replace(/'/g,"\\'")}')">
+          <div class="step-img-caption" style="background:#fdf0ee;color:#c0392b">🚨 Klinisk foto · ${query}</div>
+        `;
+        return;
+      }
+    } catch(e) {}
+    // Fallback to animated SVG with danger styling
+    wrap.innerHTML = getAnimatedSVGWrap(query, true);
+  } else {
+    // Normal steps → animated SVG illustration
+    wrap.innerHTML = getAnimatedSVGWrap(query, false);
+  }
+}
+
+function getAnimatedSVGWrap(query, isDanger) {
+  const svg = getAnimatedSVG(query);
+  const caption = isDanger
+    ? `<div class="step-img-caption" style="background:#fdf0ee;color:#c0392b">🚨 ${query}</div>`
+    : `<div class="step-img-caption">🎨 Illustration · ${query}</div>`;
+  return `<div style="padding:0">${svg}</div>${caption}`;
+}
+// ─── TTS ─────────────────────────────────────────────────────────
+let ttsText = '';
+
+function buildTTSText(guide) {
+  let txt = `${guide.titel}. Rolle: ${roleLabels[role]}. `;
+  (guide.trin||[]).forEach((t,i) => {
+    txt += `Trin ${i+1}: ${t.titel}. ${t.beskrivelse}. `;
+    if (t.advarsel) txt += `Vigtigt: ${t.advarsel.tekst}. `;
+  });
+  ttsText = txt;
+}
+
+function toggleTTS() {
+  if (ttsActive) {
+    stopTTS();
+  } else {
+    startTTS();
+  }
+}
+
+function startTTS() {
+  if (!ttsText || !window.speechSynthesis) {
+    alert('Tekst-til-tale er ikke tilgængeligt i din browser.');
+    return;
+  }
+  stopTTS();
+  ttsUtterance = new SpeechSynthesisUtterance(ttsText);
+  ttsUtterance.lang = 'da-DK';
+  ttsUtterance.rate = 0.92;
+  ttsUtterance.pitch = 1;
+
+  // Try to find a Danish voice
+  const voices = window.speechSynthesis.getVoices();
+  const daVoice = voices.find(v => v.lang.startsWith('da'));
+  if (daVoice) ttsUtterance.voice = daVoice;
+
+  ttsUtterance.onend = () => { ttsActive = false; updateTTSBtn(); };
+  ttsUtterance.onerror = () => { ttsActive = false; updateTTSBtn(); };
+
+  window.speechSynthesis.speak(ttsUtterance);
+  ttsActive = true;
+  updateTTSBtn();
+}
+
+function stopTTS() {
+  window.speechSynthesis?.cancel();
+  ttsActive = false;
+  updateTTSBtn();
+}
+
+function updateTTSBtn() {
+  const btn = document.getElementById('ttsBtn');
+  if (!btn) return;
+  if (ttsActive) {
+    btn.classList.add('speaking');
+    btn.querySelector('span:last-child').textContent = 'Stop';
+    btn.querySelector('.tts-icon').textContent = '⏹ ';
+  } else {
+    btn.classList.remove('speaking');
+    btn.querySelector('span:last-child').textContent = 'Læs op';
+    btn.querySelector('.tts-icon').textContent = '🔊 ';
+  }
+}
+
+// Preload voices
+window.speechSynthesis?.getVoices();
+window.speechSynthesis?.addEventListener('voiceschanged', () => window.speechSynthesis.getVoices());
+
+// ─── SIDEBAR ─────────────────────────────────────────────────────
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// Init TTS icon
+document.addEventListener('DOMContentLoaded', () => {
+  const ttsIcon = document.querySelector('.tts-icon');
+  if (ttsIcon) ttsIcon.textContent = '🔊 ';
+});
+
+// ─── AUTH & ADMIN SYSTEM ─────────────────────────────────────────
+// Simple XOR obfuscation — keeps key out of plain sight in source
+function xorCipher(str, key) {
+  return str.split('').map((c,i) =>
+    String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))
+  ).join('');
+}
+function toB64(str) { return btoa(unescape(encodeURIComponent(str))); }
+function fromB64(str) { try { return decodeURIComponent(escape(atob(str))); } catch(e) { return ''; } }
+
+// Admin secret — change this before deploy (tap ⚙️ 5 times to open admin)
+const ADMIN_SECRET = 'OUHadmin2024!';
+let adminClickCount = 0;
+let adminClickTimer = null;
+let sessionApiKey = null; // held only in memory, never in DOM
+
+function handleLogoClick() {
+  adminClickCount++;
+  clearTimeout(adminClickTimer);
+  adminClickTimer = setTimeout(() => { adminClickCount = 0; }, 3000);
+  if (adminClickCount >= 5) {
+    adminClickCount = 0;
+    openAdmin();
+  }
+}
+
+// ── LOGIN ────────────────────────────────────────────────────────
+function showLogin() {
+  const s = document.getElementById('loginScreen');
+  s.style.display = 'flex';
+  setTimeout(() => document.getElementById('loginInput')?.focus(), 200);
+}
+
+function hideLogin() {
+  document.getElementById('loginScreen').style.display = 'none';
+}
+
+function doLogin() {
+  const input = document.getElementById('loginInput').value.trim();
+  const storedPwB64 = localStorage.getItem('ouh_pw');
+  const storedKeyB64 = localStorage.getItem('ouh_key');
+  const errEl = document.getElementById('loginError');
+
+  if (!storedPwB64 || !storedKeyB64) {
+    errEl.textContent = '⚙️ Ingen adgangskode sat – kontakt administrator';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const storedPw = fromB64(storedPwB64);
+  if (input !== storedPw) {
+    errEl.style.display = 'block';
+    document.getElementById('loginInput').value = '';
+    document.getElementById('loginInput').focus();
+    setTimeout(() => errEl.style.display = 'none', 3000);
+    return;
+  }
+
+  // Decrypt API key into session memory only
+  const encKey = fromB64(storedKeyB64);
+  sessionApiKey = xorCipher(encKey, input);
+  sessionStorage.setItem('ouh_session', '1'); // marks logged in for this tab
+  hideLogin();
+}
+
+function doLogout() {
+  sessionApiKey = null;
+  sessionStorage.removeItem('ouh_session');
+  closeAdmin();
+  showLogin();
+}
+
+// ── ADMIN ────────────────────────────────────────────────────────
+function openAdmin() {
+  const pw = prompt('Admin-adgangskode:');
+  if (pw !== ADMIN_SECRET) { alert('Forkert admin-kode'); return; }
+  const panel = document.getElementById('adminPanel');
+  panel.style.display = 'flex';
+  // Show current values if set
+  const storedPwB64 = localStorage.getItem('ouh_pw');
+  if (storedPwB64) document.getElementById('adminPwInput').value = fromB64(storedPwB64);
+}
+
+function closeAdmin() {
+  document.getElementById('adminPanel').style.display = 'none';
+}
+
+function saveAdminSettings() {
+  const apiKey = document.getElementById('adminApiInput').value.trim();
+  const pw = document.getElementById('adminPwInput').value.trim();
+  const msg = document.getElementById('adminMsg');
+
+  if (!pw) { showAdminMsg('❌ Adgangskode må ikke være tom', '#fdf0ee', '#c0392b'); return; }
+  if (apiKey && !apiKey.startsWith('sk-ant-')) {
+    showAdminMsg('❌ API-nøgle skal starte med sk-ant-...', '#fdf0ee', '#c0392b'); return;
+  }
+
+  // Save password in plain b64 (just to retrieve for display)
+  localStorage.setItem('ouh_pw', toB64(pw));
+
+  // Encrypt API key with the user password before storing
+  if (apiKey) {
+    const encrypted = xorCipher(apiKey, pw);
+    localStorage.setItem('ouh_key', toB64(encrypted));
+    showAdminMsg('✅ Gemt! Del adgangskoden "' + pw + '" med personalet.', '#edfaf3', '#27ae60');
+  } else {
+    showAdminMsg('✅ Adgangskode gemt. API-nøgle uændret.', '#edfaf3', '#27ae60');
+  }
+
+  document.getElementById('adminApiInput').value = '';
+}
+
+function showAdminMsg(text, bg, color) {
+  const el = document.getElementById('adminMsg');
+  el.textContent = text;
+  el.style.background = bg;
+  el.style.color = color;
+  el.style.display = 'block';
+}
+
+// ── STARTUP ──────────────────────────────────────────────────────
+function getApiKey() {
+  return sessionApiKey;
+}
+
+// Check if already logged in this session
+if (sessionStorage.getItem('ouh_session') === '1') {
+  // Re-derive key from stored data using stored password
+  const storedPwB64 = localStorage.getItem('ouh_pw');
+  const storedKeyB64 = localStorage.getItem('ouh_key');
+  if (storedPwB64 && storedKeyB64) {
+    const storedPw = fromB64(storedPwB64);
+    sessionApiKey = xorCipher(fromB64(storedKeyB64), storedPw);
+  } else {
+    showLogin();
+  }
+} else {
+  showLogin();
+}
+</script>
+</body>
+</html>
