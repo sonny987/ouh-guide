@@ -151,9 +151,9 @@ header{background:var(--accent);color:white;padding:0 16px;display:flex;align-it
 .step-desc{font-size:13.5px;color:var(--text2);line-height:1.65;word-wrap:break-word;overflow-wrap:break-word;white-space:normal;}
 
 /* STEP IMAGE */
-.step-img-wrap{margin:0 18px 14px 52px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--bg);position:relative;}
-.step-img{width:100%;display:block;object-fit:cover;max-height:160px;}
-.step-img-caption{padding:5px 10px;font-size:11px;color:var(--text3);background:var(--surface2);font-style:italic}
+.step-img-wrap{margin:0 18px 12px 52px;border-radius:6px;overflow:hidden;border:1px solid var(--border);background:var(--bg);}
+.step-img{width:100%;display:block;object-fit:cover;max-height:100px;}
+.step-img-caption{padding:4px 10px;font-size:10px;color:var(--text3);background:var(--surface2);font-style:italic}
 .step-img-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;gap:8px;color:var(--text3)}
 .step-img-placeholder .big-icon{font-size:32px;opacity:.5}
 .step-img-placeholder .img-lbl{font-size:11px;font-family:'IBM Plex Mono',monospace}
@@ -1347,7 +1347,7 @@ async function loadStepImage(query, idx, isDanger) {
   if (activeId === 'cvk' || activeId === 'picc' || activeId === 'portakateter') {
     const photoUrl = getCVKPhoto(query, idx);
     wrap.innerHTML = `
-      <img class="step-img" src="${photoUrl}" alt="${query}" loading="lazy" style="object-fit:contain;max-height:140px;background:white;">
+      <img class="step-img" src="${photoUrl}" alt="${query}" loading="lazy" style="object-fit:contain;max-height:100px;background:white;">
       <div class="step-img-caption">📷 Klinisk foto · ${query}</div>
     `;
     return;
